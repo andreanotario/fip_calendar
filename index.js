@@ -5,7 +5,6 @@ import { createEvents } from "ics";
 import months from "months";
 import fs from "fs";
 
-const API_MATCHES = "https://premierpadel.com/premierpadel/api/beforeauth/gettournamentsmatchlistnew";
 
 const YEAR = 2026;
 
@@ -14,8 +13,7 @@ const getAllTournaments = async () => {
 
     const tournaments = [];
 
-    for (let m = 0; m < 12; m++) {
-        const month = months[m];
+    for (const month of months) {
         const form = new FormData();
         form.append("pagesize", "-1");
         form.append("year", YEAR);
@@ -36,10 +34,82 @@ const getAllTournaments = async () => {
     return uniqueTournaments;
 }
 
+const formattedDate = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+
+    return `${y}-${m}-${d}`;
+};
+
+
+const getAllMatchesByTournament = async (tour, draw_type = "Men", lang = "es") => {
+    const API_MATCHES = "https://premierpadel.com/premierpadel/api/beforeauth/gettournamentsmatchlistnew";
+
+    const start = new Date(tour.start_date);
+    const end = new Date(tour.end_date);
+
+    const all_matches = [];
+
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const date = new Date(d);
+
+        const form = new FormData();
+        form.append("date", formattedDate(date));
+        form.append("tournaments_id", tour.tournaments_id);
+        form.append("draw_type", draw_type);
+        form.append("lang", lang);
+
+        const matches = await axios.post(API_MATCHES, form, {
+            headers: {
+                ...form.getHeaders()
+            }
+        });
+        // console.dir(tours)
+        all_matches.push(matches.data.data)
+    }
+    console.log("end")
+    // console.dir(tournaments.flat())
+    const uniqueMatches = _.uniqBy(_.flatten(all_matches), "matchId");
+    return uniqueMatches;
+}
+
+const generateResource = (resource_path, content) => {
+    try {
+        fs.writeFileSync(resource_path, content);
+    }
+    catch (e) {
+        console.error(JSON.stringify(e));
+    }
+}
+
+
+
+function generateCalendar(events, year = new Date().getFullYear(), calendar_name = "fip_calendar") {
+    createEvents(
+        events,
+        {
+            calName: "Premier Padel " + year,
+            productId: "fip_calendar"
+        },
+        (error, value) => {
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            const folderpath = "./calendar/";
+            const filepath = "tournaments.ics";
+            generateResource(folderpath + filepath, value);
+            console.log("✅ Calendar generated: " + filepath);
+        }
+    );
+}
+
 const tours = await getAllTournaments();
 console.dir(tours);
 
-const events = tours.map((event) => {
+const tourEvents = tours.map((event) => {
     return {
         title: event.full_name,
         description: event.type,
@@ -53,16 +123,9 @@ const events = tours.map((event) => {
     };
 });
 
+generateCalendar(tourEvents);
 
-createEvents(events, {
-    calName: "Premier Padel " + YEAR,
-    productId: "fip_calendar"
-}, (error, value) => {
-    if (error) {
-        console.error(error);
-        return;
-    }
-
-    fs.writeFileSync("./calendar/calendar.ics", value);
-    console.log("✅ Calendario generato: calendar.ics");
-});
+for (const tour of tours){
+    console.dir(tour);
+    const matches = await getAllMatchesByTournament(tour)
+}
