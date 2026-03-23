@@ -74,6 +74,20 @@ const getAllMatchesByTournament = async (tour, draw_type = "Men", lang = "es") =
     return uniqueMatches;
 }
 
+const getCalendarEvent = (title, descr, location, start, end) => {
+  return {
+        title: title,
+        description: descr,
+        location: location,
+        start: start,
+        end: end,
+        startInputType: "local",
+        startOutputType: "local",
+        endInputType: "local",
+        endOutputType: "local",
+    };
+}
+
 const generateResource = (resource_path, content) => {
     try {
         fs.writeFileSync(resource_path, content);
@@ -85,12 +99,12 @@ const generateResource = (resource_path, content) => {
 
 
 
-function generateCalendar(events, year = new Date().getFullYear(), calendar_name = "fip_calendar") {
+const generateCalendar = (events, year = new Date().getFullYear(), calendar_name = "fip_calendar") => {
     createEvents(
         events,
         {
             calName: "Premier Padel " + year,
-            productId: "fip_calendar"
+            productId: calendar_name
         },
         (error, value) => {
             if (error) {
@@ -99,7 +113,7 @@ function generateCalendar(events, year = new Date().getFullYear(), calendar_name
             }
 
             const folderpath = "./calendar/";
-            const filepath = "tournaments.ics";
+            const filepath = calendar_name + ".ics";
             generateResource(folderpath + filepath, value);
             console.log("✅ Calendar generated: " + filepath);
         }
@@ -107,25 +121,41 @@ function generateCalendar(events, year = new Date().getFullYear(), calendar_name
 }
 
 const tours = await getAllTournaments();
-console.dir(tours);
+//console.dir(tours);
 
-const tourEvents = tours.map((event) => {
-    return {
-        title: event.full_name,
-        description: event.type,
-        location: _.capitalize(event.city) + ", " + event.country,
-        start: Date.parse(event.start_date),
-        end: Date.parse(event.end_date),
-        startInputType: "local",
-        startOutputType: "local",
-        endInputType: "local",
-        endOutputType: "local",
-    };
+const tourEvents = tours.map((tour) => {
+    return getCalendarEvent(tour.full_name, tour.type, _.capitalize(tour.city) + ", " + tour.country, Date.parse(tour.start_date), Date.parse(tour.end_date));
 });
 
-generateCalendar(tourEvents);
 
-for (const tour of tours){
+
+//generateCalendar(tourEvents);
+
+const mdEvents = [];
+//for (const tour of tours){
+    const tour = tours[3];
     console.dir(tour);
-    const matches = await getAllMatchesByTournament(tour)
-}
+    const matchDays = await getAllMatchesByTournament(tour)
+    //console.dir(matchDays)
+    for (const matchDay of matchDays) {      //mdAllEvents.push(matchDay.l)
+      const mdAllEvents = [
+        matchDay.main_draw,
+        matchDay.qualify_draw
+      ].filter(Boolean);
+      mdEvents.push(mdAllEvents.map((mde) =>{
+        console.log("mde");
+        console.dir(mde);
+        const title = `${mde.tournament_name} - Day ${mde.day} - ${mde.round_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} VS. ${mde.team2_player_name} & ${mde.team2_partner_name}`;
+        console.log(title);
+        const location = _.capitalize(tour.city) + ", " + tour.country;
+        console.log(location);
+        const start = `${mde.date}T${mde.start_time}:00`;
+        
+        console.log(start);
+       const end = start;
+        //end.setHours(end.getHours() + 2);
+        //return getCalendarEvent(title, mde.court_name, location, start, end);
+      }));
+    }
+    //}
+    //generateCalendar(mdEvents, undefined, "fip_calendar_matches");
