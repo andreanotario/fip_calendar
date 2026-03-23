@@ -43,9 +43,9 @@ const events = tours.map((event) => {
     return {
         title: event.full_name,
         description: event.type,
-        location: event.city + ", " + event.country,
-        start: event.start_date,
-        end: event.end_date,
+        location: _.capitalize(event.city) + ", " + event.country,
+        start: Date.parse(event.start_date),
+        end: Date.parse(event.end_date),
         startInputType: "local",
         startOutputType: "local",
         endInputType: "local",
