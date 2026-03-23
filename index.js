@@ -54,7 +54,10 @@ const events = tours.map((event) => {
 });
 
 
-createEvents(events, (error, value) => {
+createEvents(events, {
+    calName: "Premier Padel " + YEAR,
+    productId: "fip_calendar"
+}, (error, value) => {
     if (error) {
         console.error(error);
         return;
