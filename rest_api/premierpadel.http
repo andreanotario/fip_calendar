@@ -1,0 +1,6 @@
+### All tournaments
+POST https://premierpadel.com/premierpadel/api/beforeauth/getfanapptournaments
+
+
+### All matches by tournament
+POST https://premierpadel.com/premierpadel/api/beforeauth/gettournamentsmatchlistnew
