@@ -24,7 +24,9 @@ for (const tour of tours) {
     for (const matchDay of matchDays) {
         const mdAllEvents = [
             ...matchDay.main_draw,
-            ...matchDay.qualify_draw
+            ...matchDay.qualify_draw,
+            ...matchDay.live,
+            ...matchDay.upcoming
         ].filter(Boolean);
         matches.push(...mdAllEvents);
         matchEvents.push(...mdAllEvents.map((mde) => {
