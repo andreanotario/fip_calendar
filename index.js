@@ -10,7 +10,7 @@ const tours = await getAllTournaments(YEAR);
 generateResource("./resources/tournaments.json", JSON.stringify(tours));
 
 const tourEvents = tours.map((tour) => {
-    return getCalendarEvent(tour.full_name, tour.type, _.capitalize(tour.city) + ", " + tour.country, Date.parse(tour.start_date), Date.parse(tour.end_date));
+    return getCalendarEvent(tour.full_name, tour.type, _.capitalize(tour.city) + ", " + tour.country, Date.parse(tour.start_date_utc + "Z"), Date.parse(tour.end_date_utc + "Z"));
 });
 
 generateCalendar(tourEvents);
@@ -35,7 +35,7 @@ for (const tour of tours) {
             console.debug(title);
             const location = _.capitalize(tour.city) + ", " + tour.country;
             console.debug(location);
-            const start = `${mde.date}T${mde.start_time}:00`;
+            const start = `${mde.date}T${mde.start_time}:00Z`;
 
             console.debug(start);
             const startDate = new Date(start);
