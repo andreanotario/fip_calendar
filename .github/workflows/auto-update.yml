@@ -1,4 +1,4 @@
-name: Update Calendars & resoruces
+name: Update Calendars & Resources
 
 on:
   schedule:
