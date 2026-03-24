@@ -2,7 +2,7 @@ import _ from "lodash"
 import { createEvents } from "ics";
 import fs from "fs";
 import cityTimezones from "city-timezones";
-import { fromZonedTime, toZonedTime } from "date-fns-tz";
+import { fromZonedTime } from "date-fns-tz";
 
 export const formattedDate = (date) => {
     const y = date.getFullYear();
@@ -27,15 +27,13 @@ export const getTimezoneFromTour = (tour) => {
     if (result.length) return result[0].timezone;
 
     console.warn("Fallback on UTC");
-    
+
     return "UTC";
 }
 
-export const convertDate = (utcDate, timezone) => {
-    return toZonedTime(utcDate, timezone);
+export const convertDate = (date, timezone) => {
+    return fromZonedTime(date, timezone);
 }
-
-
 
 export const getCalendarEvent = (title, descr, location, start, end) => {
     return {
