@@ -44,10 +44,10 @@ export const getCalendarEvent = (title, descr, location, start, end) => {
         location: location,
         start: start,
         end: end,
-        startInputType: "utc",
-        startOutputType: "utc",
-        endInputType: "utc",
-        endOutputType: "utc",
+        startInputType: "local",
+        startOutputType: "local",
+        endInputType: "local",
+        endOutputType: "local",
     };
 }
 
