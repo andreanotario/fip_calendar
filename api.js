@@ -2,10 +2,10 @@ import axios from "axios";
 import FormData from "form-data";
 import _ from "lodash"
 import months from "months";
-import { formattedDate} from "./utils.js";
+import { formattedDate } from "./utils.js";
 
 export const getAllTournaments = async (year) => {
-    const API_TOURNAMENTS = "https://premierpadel.com/premierpadel/api/beforeauth/getfanapptournaments"
+    const API = "https://premierpadel.com/premierpadel/api/beforeauth/getfanapptournaments"
 
     const tournaments = [];
 
@@ -16,7 +16,7 @@ export const getAllTournaments = async (year) => {
         form.append("lang", "es");
         form.append("month_name", month);
 
-        const tours = await axios.post(API_TOURNAMENTS, form, {
+        const tours = await axios.post(API, form, {
             headers: {
                 ...form.getHeaders()
             }
@@ -30,24 +30,44 @@ export const getAllTournaments = async (year) => {
     return uniqueTournaments;
 }
 
-export const getAllMatchesByTournament = async (tour, draw_type = "Men", lang = "es") => {
-    const API_MATCHES = "https://premierpadel.com/premierpadel/api/beforeauth/gettournamentsmatchlistnew";
+export const getTournamentDates = async (slug, lang = "es") => {
+    const API = "https://premierpadel.com/premierpadel/api/beforeauth/gettournamentsdate"
 
-    const start = new Date(tour.start_date);
-    const end = new Date(tour.end_date);
+    const form = new FormData();
+    form.append("slug", slug);
+    form.append("lang", lang);
+
+    const days = await axios.post(API, form, {
+        headers: {
+            ...form.getHeaders()
+        }
+    });
+
+    return days.data.data;
+}
+
+
+export const getAllMatchesByTournament = async (tour, draw_type = "Men", lang = "es") => {
+    const API = "https://premierpadel.com/premierpadel/api/beforeauth/gettournamentsmatchlistnew";
+
+    // const start = new Date(tour.start_date);
+    // const end = new Date(tour.end_date);
 
     const all_matches = [];
 
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        const date = new Date(d);
+    const dates = await getTournamentDates(tour.slug, lang);
+
+    for (const { date } of dates) {
+        // const date = new Date(d);
 
         const form = new FormData();
-        form.append("date", formattedDate(date));
+        // form.append("date", formattedDate(date));
+        form.append("date", date);
         form.append("tournaments_id", tour.tournaments_id);
         form.append("draw_type", draw_type);
         form.append("lang", lang);
 
-        const matches = await axios.post(API_MATCHES, form, {
+        const matches = await axios.post(API, form, {
             headers: {
                 ...form.getHeaders()
             }
@@ -57,6 +77,5 @@ export const getAllMatchesByTournament = async (tour, draw_type = "Men", lang = 
     }
     // console.debug("end")
     // console.dir(tournaments.flat())
-    const uniqueMatches = _.uniqBy(_.flatten(all_matches), "matchId");
-    return uniqueMatches;
+    return all_matches;
 }
