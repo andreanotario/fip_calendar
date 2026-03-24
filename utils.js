@@ -1,6 +1,8 @@
 import _ from "lodash"
 import { createEvents } from "ics";
 import fs from "fs";
+import cityTimezones from "city-timezones";
+import { fromZonedTime, toZonedTime } from "date-fns-tz";
 
 export const formattedDate = (date) => {
     const y = date.getFullYear();
@@ -9,6 +11,30 @@ export const formattedDate = (date) => {
 
     return `${y}-${m}-${d}`;
 };
+
+export const getTimezoneFromTour = (tour) => {
+    let result = cityTimezones.lookupViaCity(_.capitalize(tour.city));
+    if (result.length) return result[0].timezone;
+
+    const normalized = _.capitalize(_.deburr(tour.city));
+    result = cityTimezones.lookupViaCity(normalized);
+    if (result.length) return result[0].timezone;
+
+    result = cityTimezones.findFromCityStateProvince(tour.country);
+    if (result.length) return result[0].timezone;
+
+    result = cityTimezones.findFromIsoCode(tour.country_code);
+    if (result.length) return result[0].timezone;
+
+    console.warn("Fallback on UTC");
+    
+    return "UTC";
+}
+
+export const convertDate = (utcDate, timezone) => {
+    return toZonedTime(utcDate, timezone);
+}
+
 
 
 export const getCalendarEvent = (title, descr, location, start, end) => {

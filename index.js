@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { getCalendarEvent, generateCalendar, generateResource } from "./utils.js";
+import { getTimezoneFromTour, getCalendarEvent, generateCalendar, generateResource, convertDate } from "./utils.js";
 import { getAllTournaments, getAllMatchesByTournament } from "./api.js";
 
 const YEAR = new Date().getFullYear();
@@ -10,7 +10,10 @@ const tours = await getAllTournaments(YEAR);
 generateResource("./resources/tournaments.json", JSON.stringify(tours));
 
 const tourEvents = tours.map((tour) => {
-    return getCalendarEvent(tour.full_name, tour.type, _.capitalize(tour.city) + ", " + tour.country, Date.parse(tour.start_date_utc + "Z"), Date.parse(tour.end_date_utc + "Z"));
+    const timezone = getTimezoneFromTour(tour);
+    const start_date = convertDate(Date.parse(tour.start_date_utc + "Z"), timezone);
+    const end_date = convertDate(Date.parse(tour.end_date_utc + "Z"), timezone);
+    return getCalendarEvent(tour.full_name, tour.type, _.capitalize(tour.city) + ", " + tour.country, start_date.getTime(), end_date.getTime());
 });
 
 generateCalendar(tourEvents);
@@ -20,6 +23,8 @@ const matchEvents = [];
 for (const tour of tours) {
     // console.debug(tour);
     const matchDays = await getAllMatchesByTournament(tour)
+
+    const timezone = getTimezoneFromTour(tour);
     //console.debug(matchDays)
     for (const matchDay of matchDays) {
         const mdAllEvents = [
@@ -34,14 +39,12 @@ for (const tour of tours) {
             const title = `${mde.tournament_name} - Day ${mde.day} - ${mde.round_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} VS. ${mde.team2_player_name} & ${mde.team2_partner_player_name}`;
             console.debug(title);
             const location = _.capitalize(tour.city) + ", " + tour.country;
-            console.debug(location);
             const start = `${mde.date}T${mde.start_time}:00Z`;
-
-            console.debug(start);
-            const startDate = new Date(start);
-            const endDate = new Date(start);
-            endDate.setHours(endDate.getHours() + 2);
-            return getCalendarEvent(title, mde.court_name, location, startDate.getTime(), endDate.getTime());
+            
+            const start_date = convertDate(Date.parse(start), timezone);
+            const end_date = convertDate(Date.parse(start), timezone);
+            end_date.setHours(end_date.getHours() + 2);
+            return getCalendarEvent(title, mde.court_name, location, start_date.getTime(), end_date.getTime());
         }));
     }
 }
