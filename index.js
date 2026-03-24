@@ -36,15 +36,17 @@ for (const tour of tours) {
         matches.push(...mdAllEvents);
         matchEvents.push(...mdAllEvents.filter(m => m.team1_player_name != "BYE" && m.team2_player_name != "BYE" && m.team1_partner_name != "BYE" && m.team2_partner_name != "BYE").map((mde) => {
             // console.debug(mde);
-            const title = `${mde.tournament_name} - Day ${mde.day} - ${mde.round_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} VS. ${mde.team2_player_name} & ${mde.team2_partner_player_name}`;
+            const title = `${mde.tournament_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} Vs. ${mde.team2_player_name} & ${mde.team2_partner_player_name}`;
             console.debug(title);
+
+            const descr = `Day ${mde.day} - ${mde.round_name} - ${mde.court_name}`
             const location = _.capitalize(tour.city) + ", " + tour.country;
             const start = `${mde.date}T${mde.start_time}:00`;
 
             const start_date = convertDate(Date.parse(start), timezone);
             const end_date = convertDate(Date.parse(start), timezone);
             end_date.setHours(end_date.getHours() + 2);
-            return getCalendarEvent(title, mde.court_name, location, start_date.getTime(), end_date.getTime());
+            return getCalendarEvent(title, descr, location, start_date.getTime(), end_date.getTime());
         }));
     }
 }
