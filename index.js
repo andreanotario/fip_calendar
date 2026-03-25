@@ -14,7 +14,7 @@ const tourEvents = tours.map((tour) => {
     const timezone = getTimezoneFromTour(tour);
     const start_date = convertDate(Date.parse(tour.start_date), timezone);
     const end_date = convertDate(Date.parse(tour.end_date), timezone);
-    return getCalendarEvent(tour.full_name, tour.type, _.capitalize(tour.city) + ", " + tour.country, start_date.getTime(), end_date.getTime());
+    return getCalendarEvent(tour.tournaments_id.toString(), tour.full_name, tour.type, _.capitalize(tour.city) + ", " + tour.country, start_date.getTime(), end_date.getTime());
 });
 
 generateCalendar(tourEvents, "fip_calendar_tournaments", `Premier Padel - ${YEAR}`);
@@ -27,9 +27,9 @@ for (const tour of tours) {
     // console.debug(tour);
     const timezone = getTimezoneFromTour(tour);
 
-    const liveMatches = await getLiveMatches(tour.slug)
-    const matchDaysMen = await getAllMatchesByTournament(tour, "Men")
-    const matchDaysWomen = await getAllMatchesByTournament(tour, "Women")
+    const liveMatches = await getLiveMatches(tour.slug);
+    const matchDaysMen = await getAllMatchesByTournament(tour, "Men");
+    const matchDaysWomen = await getAllMatchesByTournament(tour, "Women");
     //console.debug(matchDays)
     for (const matchDay of matchDaysMen) {
         const mdAllEvents = [
@@ -41,17 +41,24 @@ for (const tour of tours) {
         matches.push(...mdAllEvents);
         matchEventsMen.push(...mdAllEvents.filter(m => m.is_bye == "No").map((mde) => {
             // console.debug(mde);
-            const title = `${mde.tournament_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} Vs. ${mde.team2_player_name} & ${mde.team2_partner_player_name}`;
+
+            const live = _.find(liveMatches, { "tournaments_match_id": mde.tournaments_match_id });
+            let title_live = "";
+            if (live) {
+                title_live = "🔴LIVE ";
+            }
+            const title = `${title_live}${mde.tournament_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} Vs. ${mde.team2_player_name} & ${mde.team2_partner_player_name}`;
             console.debug(title);
 
             const descr = `Day ${mde.day} - ${mde.round_name} - ${mde.court_name}`
             const location = _.capitalize(tour.city) + ", " + tour.country;
+            const uid = `${tour.tournaments_id.toString()}_${mde.tournaments_match_id.toString()}`;
             const start = `${mde.date}T${mde.start_time}:00`;
 
             const start_date = convertDate(Date.parse(start), timezone);
             const end_date = convertDate(Date.parse(start), timezone);
             end_date.setHours(end_date.getHours() + offset);
-            return getCalendarEvent(title, descr, location, start_date.getTime(), end_date.getTime());
+            return getCalendarEvent(uid, title, descr, location, start_date.getTime(), end_date.getTime());
         }));
     }
     for (const matchDay of matchDaysWomen) {
@@ -63,23 +70,28 @@ for (const tour of tours) {
         ].filter(Boolean);
         matches.push(...mdAllEvents);
         matchEventsWomen.push(...mdAllEvents.filter(m => m.is_bye == "No").map((mde) => {
-            // console.debug(mde);
-            // const live = isLive ? "🔴LIVE - " : "";
-            const title = `${mde.tournament_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} Vs. ${mde.team2_player_name} & ${mde.team2_partner_player_name}`;
+            const live = _.find(liveMatches, { "tournaments_match_id": mde.tournaments_match_id });
+            let title_live = "";
+            if (live) {
+                title_live = "🔴LIVE ";
+            }
+            const title = `${title_live}${mde.tournament_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} Vs. ${mde.team2_player_name} & ${mde.team2_partner_player_name}`;
             console.debug(title);
 
             const descr = `Day ${mde.day} - ${mde.round_name} - ${mde.court_name}`
             const location = _.capitalize(tour.city) + ", " + tour.country;
+            const uid = `${tour.tournaments_id.toString()}_${mde.tournaments_match_id.toString()}`;
             const start = `${mde.date}T${mde.start_time}:00`;
 
             const start_date = convertDate(Date.parse(start), timezone);
             const end_date = convertDate(Date.parse(start), timezone);
             end_date.setHours(end_date.getHours() + offset);
-            return getCalendarEvent(title, descr, location, start_date.getTime(), end_date.getTime());
+            return getCalendarEvent(uid, title, descr, location, start_date.getTime(), end_date.getTime());
         }));
     }
-    matchEventsAll.push(...matchEventsMen, ...matchEventsWomen);
 }
+matchEventsAll.push(...matchEventsMen, ...matchEventsWomen);
+
 generateResource("./resources/matches.json", JSON.stringify(matches));
 
 generateCalendar(matchEventsMen, "fip_calendar_matches_men", `Premier Padel - ${YEAR} - Matches Men`);

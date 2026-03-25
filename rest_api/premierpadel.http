@@ -1,6 +1,21 @@
 ### All tournaments
 POST https://premierpadel.com/premierpadel/api/beforeauth/getfanapptournaments
+Content-Type: application/x-www-form-urlencoded
+
+month_name=March&year=2026&lang=en
+
 
 
 ### All matches by tournament
 POST https://premierpadel.com/premierpadel/api/beforeauth/gettournamentsmatchlistnew
+Content-Type: application/x-www-form-urlencoded
+
+date=2026-03-25&tournaments_id=261&draw_type=Women&lang=en
+
+
+
+### All matches live by tournament
+POST https://premierpadel.com/premierpadel/api/beforeauth/gettournamentslivematch
+Content-Type: application/x-www-form-urlencoded
+
+slug=miami-p1

@@ -35,8 +35,9 @@ export const convertDate = (date, timezone) => {
     return fromZonedTime(date, timezone);
 }
 
-export const getCalendarEvent = (title, descr, location, start, end) => {
+export const getCalendarEvent = (uid, title, descr, location, start, end) => {
     return {
+        uid: uid,
         title: title,
         description: descr,
         location: location,
