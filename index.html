@@ -5,8 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>fip_calendar</title>
-
-    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -17,71 +15,71 @@
         <!-- Card -->
         <div class="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full text-center">
 
-            <h1 class="text-3xl font-bold mb-2">
-                🎾 fip_calendar 2026
-            </h1>
+            <h1 class="text-3xl font-bold mb-2">🎾 fip_calendar 2026</h1>
+            <p class="text-gray-500 mb-6">Automatically updated calendar</p>
 
-            <p class="text-gray-500 mb-6">
-                Automatically updated calendar
-            </p>
-
-            <!-- Bottoni -->
-            <div class="space-y-3">
-                <p class="text-black-500 mb-6">
-                    Tournaments
-                </p>
+            <!-- Tournaments: sempre visibili -->
+            <div class="mb-6">
+                <p class="text-black-500 mb-2">Tournaments</p>
                 <a href="./calendar/fip_calendar_tournaments.ics"
-                    class="block w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition">
+                    class="block w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition mb-2">
                     📅 Download Tournaments calendar
                 </a>
-
                 <a href="webcal://andreanotario.github.io/fip-calendar/calendar/fip_calendar_tournaments.ics"
                     class="block w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
-                    🔄 Add Tournaments calendar to your calendar
+                    🔄 Add Tournaments calendar
                 </a>
-                <br>
-                <p class="text-blue-500 mb-6">
-                    Men
-                </p>
-                <a href="./calendar/fip_calendar_matches_men.ics"
-                    class="block w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition">
-                    📅 Download Men Matches calendar
-                </a>
+            </div>
 
-                <a href="webcal://andreanotario.github.io/fip-calendar/calendar/fip_calendar_matches_men.ics"
-                    class="block w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
-                    🔄 Add Men Matches calendar to your calendar
-                </a>
+            <p class="text-black-500 mb-2">Matches</p>
+            <!-- Menu di scelta con colori -->
+            <div class="flex justify-center gap-4 mb-6">
+                <button class="filter-btn px-4 py-2 rounded-xl bg-orange-500 text-white hover:bg-orange-600 transition"
+                    data-filter="all">All</button>
+                <button class="filter-btn px-4 py-2 rounded-xl bg-blue-800 text-white hover:bg-blue-900 transition"
+                    data-filter="men">Men</button>
+                <button class="filter-btn px-4 py-2 rounded-xl bg-pink-500 text-white hover:bg-pink-600 transition"
+                    data-filter="women">Women</button>
+            </div>
 
-                <p class="text-purple-500 mb-6">
-                    Women
-                </p>
-                <a href="./calendar/fip_calendar_matches_women.ics"
-                    class="block w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition">
-                    📅 Download Women Matches calendar
-                </a>
+            <!-- Sezioni dei match -->
+            <div id="calendar-links">
 
-                <a href="webcal://andreanotario.github.io/fip-calendar/calendar/fip_calendar_matches_women.ics"
-                    class="block w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
-                    🔄 Add Men Matches calendar to your calendar
-                </a>
-                <br>
-                <p class="text-orange-500 mb-6">
-                    ALL
-                </p>
-                <a href="./calendar/fip_calendar_matches_all.ics"
-                    class="block w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition">
-                    📅 Download ALL Matches calendar
-                </a>
+                <div class="category all mb-4 hidden">
+                    <a href="./calendar/fip_calendar_matches_all.ics"
+                        class="block w-full bg-orange-500 text-white py-3 rounded-xl hover:bg-orange-600 transition mb-2">
+                        📅 Download ALL Matches calendar
+                    </a>
+                    <a href="webcal://andreanotario.github.io/fip-calendar/calendar/fip_calendar_matches_all.ics"
+                        class="block w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
+                        🔄 Add ALL Matches calendar
+                    </a>
+                </div>
 
-                <a href="webcal://andreanotario.github.io/fip-calendar/calendar/fip_calendar_matches_all.ics"
-                    class="block w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
-                    🔄 Add ALL Matches calendar to your calendar
-                </a>
+                <div class="category men mb-4 hidden">
+                    <a href="./calendar/fip_calendar_matches_men.ics"
+                        class="block w-full bg-blue-800 text-white py-3 rounded-xl hover:bg-blue-900 transition mb-2">
+                        📅 Download Men Matches calendar
+                    </a>
+                    <a href="webcal://andreanotario.github.io/fip-calendar/calendar/fip_calendar_matches_men.ics"
+                        class="block w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
+                        🔄 Add Men Matches calendar
+                    </a>
+                </div>
+
+                <div class="category women mb-4 hidden">
+                    <a href="./calendar/fip_calendar_matches_women.ics"
+                        class="block w-full bg-pink-500 text-white py-3 rounded-xl hover:bg-pink-600 transition mb-2">
+                        📅 Download Women Matches calendar
+                    </a>
+                    <a href="webcal://andreanotario.github.io/fip-calendar/calendar/fip_calendar_matches_women.ics"
+                        class="block w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
+                        🔄 Add Women Matches calendar
+                    </a>
+                </div>
 
             </div>
 
-            <!-- Footer -->
             <p class="text-xs text-gray-400 mt-6">
                 Not affiliated with Premier Padel / FIP
             </p>
@@ -89,6 +87,26 @@
         </div>
 
     </div>
+
+    <!-- Script filtro -->
+    <script>
+        const buttons = document.querySelectorAll(".filter-btn");
+        const categories = document.querySelectorAll(".category");
+
+        buttons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const filter = btn.dataset.filter;
+
+                categories.forEach(cat => {
+                    if (cat.classList.contains(filter)) {
+                        cat.classList.remove("hidden");
+                    } else {
+                        cat.classList.add("hidden");
+                    }
+                });
+            });
+        });
+    </script>
 
 </body>
 

@@ -3,7 +3,7 @@ import { getTimezoneFromTour, getCalendarEvent, generateCalendar, generateResour
 import { getAllTournaments, getAllMatchesByTournament, getLiveMatches } from "./api.js";
 
 const YEAR = new Date().getFullYear();
-const offset = 8;
+const offset = 12;
 
 const tours = await getAllTournaments(YEAR);
 //console.dir(tours);
