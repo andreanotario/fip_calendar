@@ -59,11 +59,11 @@ export const generateResource = (resource_path, content) => {
     }
 }
 
-export const generateCalendar = (events, year = new Date().getFullYear(), calendar_name = "fip_calendar") => {
+export const generateCalendar = (events, calendar_name = "fip_calendar", calendar_title = "fip_calendar") => {
     createEvents(
         events,
         {
-            calName: "Premier Padel " + year,
+            calName: calendar_title,
             productId: calendar_name
         },
         (error, value) => {

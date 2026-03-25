@@ -79,3 +79,18 @@ export const getAllMatchesByTournament = async (tour, draw_type = "Men", lang = 
     // console.dir(tournaments.flat())
     return all_matches;
 }
+
+export const getLiveMatches = async (slug) => {
+    const API = "https://premierpadel.com/premierpadel/api/beforeauth/gettournamentslivematch";
+
+    const form = new FormData();
+    form.append("slug", slug);
+
+    const matches = await axios.post(API, form, {
+        headers: {
+            ...form.getHeaders()
+        }
+    });
+
+return matches.data.data;
+}
