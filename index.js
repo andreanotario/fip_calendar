@@ -17,7 +17,7 @@ const tourEvents = tours.map((tour) => {
     return getCalendarEvent(tour.full_name, tour.type, _.capitalize(tour.city) + ", " + tour.country, start_date.getTime(), end_date.getTime());
 });
 
-generateCalendar(tourEvents, "fip_calendar_tournaments", `Premier Padel - ${YEAR.toString()}`);
+generateCalendar(tourEvents, "fip_calendar_tournaments", `Premier Padel - ${YEAR}`);
 
 const matches = [];
 const matchEventsMen = [];
@@ -41,7 +41,7 @@ for (const tour of tours) {
         matches.push(...mdAllEvents);
         matchEventsMen.push(...mdAllEvents.filter(m => m.is_bye == "No").map((mde) => {
             // console.debug(mde);
-            const title = `${live}${mde.tournament_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} Vs. ${mde.team2_player_name} & ${mde.team2_partner_player_name}`;
+            const title = `${mde.tournament_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} Vs. ${mde.team2_player_name} & ${mde.team2_partner_player_name}`;
             console.debug(title);
 
             const descr = `Day ${mde.day} - ${mde.round_name} - ${mde.court_name}`
@@ -65,7 +65,7 @@ for (const tour of tours) {
         matchEventsWomen.push(...mdAllEvents.filter(m => m.is_bye == "No").map((mde) => {
             // console.debug(mde);
             // const live = isLive ? "🔴LIVE - " : "";
-            const title = `${live}${mde.tournament_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} Vs. ${mde.team2_player_name} & ${mde.team2_partner_player_name}`;
+            const title = `${mde.tournament_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} Vs. ${mde.team2_player_name} & ${mde.team2_partner_player_name}`;
             console.debug(title);
 
             const descr = `Day ${mde.day} - ${mde.round_name} - ${mde.court_name}`
@@ -82,6 +82,6 @@ for (const tour of tours) {
 }
 generateResource("./resources/matches.json", JSON.stringify(matches));
 
-generateCalendar(matchEventsMen, "fip_calendar_matches_men", `Premier Padel - ${YEAR.toString()} - Matches Men`);
-generateCalendar(matchEventsWomen, "fip_calendar_matches_women", `Premier Padel - ${YEAR.toString()} - Matches Women`);
-generateCalendar(matchEventsAll, "fip_calendar_matches_all", `Premier Padel - ${YEAR.toString()} - All Matches`);
+generateCalendar(matchEventsMen, "fip_calendar_matches_men", `Premier Padel - ${YEAR} - Matches Men`);
+generateCalendar(matchEventsWomen, "fip_calendar_matches_women", `Premier Padel - ${YEAR} - Matches Women`);
+generateCalendar(matchEventsAll, "fip_calendar_matches_all", `Premier Padel - ${YEAR} - All Matches`);
