@@ -124,15 +124,16 @@ export const buildMatchEvents = (matchDays, tour, timezone) => {
                 const isLive = matchDay.live.some(
                     m => m.tournaments_match_id === mde.tournaments_match_id
                 );
-
-                const ended = mde.status = "F" ? ENDED : '';
+                const isEnded = mde.status == "F";
+                const isPlanned = mde.status == "N";
+                const ended = isEnded ? ENDED : "";
                 const live = isLive ? LIVE : "";
 
                 const title = `${live}${ended}${mde.tournament_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} Vs. ${mde.team2_player_name} & ${mde.team2_partner_player_name}`;
 
-                const score = `Score: ${buildScore(mde.team1_score, mde.team2_score)}`;
+                const score = isPlanned ? "" : `Score: ${buildScore(mde.team1_score, mde.team2_score)}`;
 
-                const descr = `Day ${mde.day} - ${mde.round_name} - ${mde.court_name}\n${score}`;
+                const descr = `Day ${mde.day} - ${mde.round_name} - ${mde.court_name}${score ? "\n" + score : ""}`;
 
                 const location = _.capitalize(tour.city) + ", " + tour.country;
                 const uid = `fip_calendar@${YEAR}§${tour.tournaments_id}#${mde.tournaments_match_id}`;
