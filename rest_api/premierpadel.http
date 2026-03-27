@@ -10,7 +10,7 @@ month_name=March&year=2026&lang=en
 POST https://premierpadel.com/premierpadel/api/beforeauth/gettournamentsmatchlistnew
 Content-Type: application/x-www-form-urlencoded
 
-date=2026-03-25&tournaments_id=261&draw_type=Women&lang=en
+date=2026-03-27&tournaments_id=261&draw_type=Women&lang=en
 
 
 

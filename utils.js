@@ -4,6 +4,14 @@ import fs from "fs";
 import cityTimezones from "city-timezones";
 import { fromZonedTime } from "date-fns-tz";
 
+const YEAR = new Date().getFullYear();
+
+const offset = 10;
+
+const SEP = " ";
+const ENDED = '[ENDED]' + SEP;
+const LIVE = '[🔴LIVE]' + SEP;
+
 export const formattedDate = (date) => {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -79,4 +87,74 @@ export const generateCalendar = (events, calendar_name = "fip_calendar", calenda
             console.log("✅ Calendar generated: " + filepath);
         }
     );
+}
+
+export const buildScore = (team1, team2) => {
+    const score = [];
+
+    for (let i = 1; i <= 5; i++) {
+        const s1 = team1[`set${i}`];
+        const s2 = team2[`set${i}`];
+
+        if (s1 == null || s2 == null) continue;
+
+        score.push(`${s1}-${s2}`);
+    }
+
+    return score.join(" ");
+}
+
+export const buildMatchEvents = (matchDays, tour, timezone) => {
+    const events = [];
+    const allMatches = [];
+
+    for (const matchDay of matchDays) {
+        const allEvents = [
+            ...matchDay.main_draw,
+            ...matchDay.qualify_draw,
+            ...matchDay.live,
+            ...matchDay.upcoming
+        ].filter(Boolean);
+
+        allMatches.push(...allEvents);
+
+        const mapped = allEvents
+            .filter(m => m.is_bye === "No")
+            .map(mde => {
+                const isLive = matchDay.live.some(
+                    m => m.tournaments_match_id === mde.tournaments_match_id
+                );
+
+                const ended = mde.status = "F" ? ENDED : '';
+                const live = isLive ? LIVE : "";
+
+                const title = `${live}${ended}${mde.tournament_name} - ${mde.team1_player_name} & ${mde.team1_partner_name} Vs. ${mde.team2_player_name} & ${mde.team2_partner_player_name}`;
+
+                const score = `Score: ${buildScore(mde.team1_score, mde.team2_score)}`;
+
+                const descr = `Day ${mde.day} - ${mde.round_name} - ${mde.court_name}\n${score}`;
+
+                const location = _.capitalize(tour.city) + ", " + tour.country;
+                const uid = `fip_calendar@${YEAR}§${tour.tournaments_id}#${mde.tournaments_match_id}`;
+                const start = `${mde.date}T${mde.start_time}:00`;
+
+                const start_date = convertDate(Date.parse(start), timezone);
+                const end_date = new Date(start_date);
+                end_date.setHours(end_date.getHours() + offset);
+
+                return getCalendarEvent(
+                    uid,
+                    title,
+                    descr,
+                    location,
+                    start_date.getTime(),
+                    end_date.getTime()
+                );
+            });
+
+        events.push(...mapped);
+    }
+
+    return { events, allMatches };
+    ;
 }
