@@ -13,9 +13,11 @@ const tourEvents = tours.map((tour) => {
     const timezone = getTimezoneFromTour(tour);
     const start_date = convertDate(Date.parse(tour.start_date), timezone);
     const end_date = convertDate(Date.parse(tour.end_date), timezone);
+    const created = Date.parse(tour.created_at);
+    const lastModified = Date.parse(tour.updated_at);
     const uid = `fip_calendar@${YEAR}§${tour.tournaments_id}`;
-    
-    return getCalendarEvent(uid, tour.full_name, tour.type, _.capitalize(tour.city) + ", " + tour.country, start_date.getTime(), end_date.getTime());
+
+    return getCalendarEvent(uid, tour.full_name, tour.type, _.capitalize(tour.city) + ", " + tour.country, start_date.getTime(), end_date.getTime(), created, lastModified);
 });
 
 generateCalendar(tourEvents, "fip_calendar_tournaments", `Premier Padel - ${YEAR}`);

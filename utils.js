@@ -43,7 +43,7 @@ export const convertDate = (date, timezone) => {
     return fromZonedTime(date, timezone);
 }
 
-export const getCalendarEvent = (uid, title, descr, location, start, end) => {
+export const getCalendarEvent = (uid, title, descr, location, start, end, created, lastModified) => {
     return {
         uid: uid,
         title: title,
@@ -51,6 +51,8 @@ export const getCalendarEvent = (uid, title, descr, location, start, end) => {
         location: location,
         start: start,
         end: end,
+        created: created,
+        lastModified: lastModified,
         startInputType: "utc",
         startOutputType: "utc",
         endInputType: "utc",
@@ -143,13 +145,18 @@ export const buildMatchEvents = (matchDays, tour, timezone) => {
                 const end_date = new Date(start_date);
                 end_date.setHours(end_date.getHours() + offset);
 
+                const created = Date.parse(mde.created_at);
+                const lastModified = Date.parse(mde.updated_at);
+
                 return getCalendarEvent(
                     uid,
                     title,
                     descr,
                     location,
                     start_date.getTime(),
-                    end_date.getTime()
+                    end_date.getTime(),
+                    created,
+                    lastModified
                 );
             });
 
